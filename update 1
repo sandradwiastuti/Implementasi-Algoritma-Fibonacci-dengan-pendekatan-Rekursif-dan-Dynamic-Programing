@@ -5,3 +5,51 @@
 
 using namespace std;
 using namespace std::chrono;
+
+long long fibonacci_recursive_memo(int n, unordered_map<int, long long>& memo) {
+    if (n <= 1)
+        return n;
+    if (memo.find(n) != memo.end())
+        return memo[n];
+    memo[n] = fibonacci_recursive_memo(n - 1, memo) + fibonacci_recursive_memo(n - 2, memo);
+    return memo[n];
+}
+long long fibonacci_dp(int n) {
+    if (n <= 1)
+        return n;
+
+    vector<long long> fib(n + 1);
+    fib[0] = 0;
+    fib[1] = 1;
+    for (int i = 2; i <= n; ++i) {
+        fib[i] = fib[i - 1] + fib[i - 2];
+    }
+    return fib[n];
+}
+
+int main() {
+    int values[] = {10, 25, 30, 40, 50};
+
+    cout << "Pengukuran Waktu Eksekusi:\n";
+    cout << "n\tRekursif (us)\tDynamic Programming (us)\n";
+
+    for (int n : values) {
+        
+        unordered_map<int, long long> memo;
+        auto start_recursive = high_resolution_clock::now();
+        fibonacci_recursive_memo(n, memo);
+        auto end_recursive = high_resolution_clock::now();
+        auto duration_recursive = duration_cast<microseconds>(end_recursive - start_recursive).count();
+
+       
+        auto start_dp = high_resolution_clock::now();
+        fibonacci_dp(n);
+        auto end_dp = high_resolution_clock::now();
+        auto duration_dp = duration_cast<microseconds>(end_dp - start_dp).count();
+
+       
+        cout << n << "\t" << duration_recursive << "\t\t" << duration_dp << "\n";
+    }
+
+    return 0;
+}
